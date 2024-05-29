@@ -1,0 +1,6 @@
+**/.DS_Store
+.env
+dataScraper/__pycache__
+dataScraper/exportedJson.json
+dataScraper/import2024.sh
+dataScraper/seasonJsonFiles

@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - ./mongo/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+    networks:
+      - backend
+
+  goapi:
+    build: 
+      context: ./goapi
+      dockerfile: Dockerfile.dev
+    container_name: goapi
+    ports:
+      - "7999:7999"
+    depends_on:
+      - mongodb
+    networks:
+      - backend
+      - frontend
+
+  webapp:
+    build:
+      context: ./vue-front-end
+      dockerfile: Dockerfile
+    container_name: vuefrontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - goapi
+    networks:
+      - frontend
+
+  nginx:
+    image: nginx:alpine
+    container_name: nginx
+    volumes:
+      - ./vue-front-end/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 80:80
+    depends_on:
+      - webapp
+    networks:
+      - frontend
+
+
+volumes:
+  mongo-data:
+
+networks:
+  backend:
+  frontend:

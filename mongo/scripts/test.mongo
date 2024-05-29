@@ -1,0 +1,5 @@
+use f1data
+
+races = db.races.find()
+console.log("hello")
+console.log(races)
