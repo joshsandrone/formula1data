@@ -12,7 +12,7 @@
 
       <div class="flex w-full">
         <DriverMenu :drivers="drivers" :teams="teams" @driver-selected="setSelectedDriver" class="hidden md:block" style="width:230px;"/>
-        <SeasonRaceStats :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor"/>
+        <SeasonRaceStats :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
       </div>
   </div>
 </template>
@@ -43,7 +43,8 @@ export default {
       selectedDriver: "Max Verstappen",
       selectedDriverTeam: {
         name : null,
-        primaryColor : null
+        primaryColor : null,
+        points : null
       },
       teams : []
     };
@@ -101,7 +102,8 @@ export default {
         for ( const driver of team.drivers ){
           if (driver.name === this.selectedDriver){
             this.selectedDriverTeam.name = team.name;
-            this.selectedDriverTeam.primaryColor = team.primaryColor
+            this.selectedDriverTeam.primaryColor = team.primaryColor;
+            this.selectedDriverTeam.points = team.points;
           }
         }
       }

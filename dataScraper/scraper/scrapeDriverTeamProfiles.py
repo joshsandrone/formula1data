@@ -31,7 +31,8 @@ def scrapeDriverTeamProfile(season : str) -> SeasonProfile:
                 driverFirstName = span_elements[0].text
                 driverSurname = span_elements[1].text
                 driverTeam = pos.select("td")[4].text.replace("\n", "")
-                logger.debug(f"{driverFirstName = } {driverSurname = } {driverTeam = }")
+                driverPoints = int(pos.select("td")[5].text)
+                logger.debug(f"{driverFirstName = } {driverSurname = } {driverPoints = }")
 
                 # Set team to None - the link will be set in TeamObj instead
                 driver = Driver(driverFirstName, driverSurname, None)
@@ -46,6 +47,7 @@ def scrapeDriverTeamProfile(season : str) -> SeasonProfile:
 
                 # Add the driver to the team object
                 teamObj.addDriver(driver)
+                teamObj.addPoints(driverPoints)
                 position += 1
 
         

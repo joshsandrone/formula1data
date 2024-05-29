@@ -24,7 +24,8 @@ export default {
   props: [
     'selectedDriver',
     'selectedSeason',
-    'color'
+    'color',
+    'teamPoints'
   ],
   components: {
     StatCircles,
@@ -49,7 +50,8 @@ export default {
               "min" : 0,
               "max" : 20,
               "value": 0,
-              "template" : "{value}"
+              "template" : "{value}",
+              "overlay" : {}
             },
             {
               "id": "highestPos",
@@ -57,7 +59,8 @@ export default {
               "min" : 0,
               "max" : 20,
               "value": 0,
-              "template" : "{value}"
+              "template" : "{value}",
+              "overlay" : {}
             },
             {
               "id" : "percentageTeamPoints",
@@ -65,7 +68,8 @@ export default {
               "min" : 0,
               "max" : 100,
               "value": 0,
-              "template" : "{value}%"
+              "template" : "{value}%",
+              "overlay" : {}
             },
             {
               "id" : "consistency",
@@ -73,7 +77,8 @@ export default {
               "min" : 0,
               "max" : 100,
               "value": 0,
-              "template" : "{value}%"
+              "template" : "{value}%",
+              "overlay" : {}
             }
       ],
       raceResultsGraphData: {
@@ -114,8 +119,12 @@ export default {
         "DNFs" : seasonData.races.dnfs
       }
 
+      let driverTeamPointPercentage = ((seasonData.races.points + seasonData.SprintRaces.sprintPoints) * 100 / (this.teamPoints)).toFixed(1);
+      driverTeamPointPercentage = isNaN(driverTeamPointPercentage) ? 0.0 : driverTeamPointPercentage
+
       this.seasonData1Race.find(r => r.id === "avgRacePos").value = seasonData.races.avgRacePos.toFixed(2);
       this.seasonData1Race.find(r => r.id === "highestPos").value = seasonData.races.highestRacePos;
+      this.seasonData1Race.find(r => r.id === "percentageTeamPoints").value = driverTeamPointPercentage;
       this.seasonData1Race.find(r => r.id === "consistency").value = seasonData.races.raceConsistency.toFixed(1);
 
       let positionsGainedData = seasonData.races.results.map((race) => {

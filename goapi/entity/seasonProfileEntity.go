@@ -9,6 +9,7 @@ type SeasonTeams struct {
     Name         string           `json:"name" bson:"name"`
     Drivers      []SeasonDrivers `json:"drivers" bson:"drivers"`
     PrimaryColor string           `json:"primaryColor" bson:"primaryColor"`
+    Points       int              `json:"points" bson:"points"  ` 
 }
 
 type SeasonDrivers struct {

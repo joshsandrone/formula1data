@@ -14,7 +14,6 @@ type DriverSeasonRaceData struct {
 	PointsFinishes 	int 	`json:"pointsFinishes"`
 	Consistency  	float64	`json:"raceConsistency"`
 	Results			[]DriverSeasonRaceResult	`json:"results"`
-	
 }
 
 type DriverSeasonSprintRaceData struct {
