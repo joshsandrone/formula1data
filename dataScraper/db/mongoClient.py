@@ -39,7 +39,7 @@ class MongoDB:
     def insert_season_profile(self, seasonProfile : SeasonProfile):
         seasonProfileJson = seasonProfile.getJsonRepr()
         insertSeasonProfileResult = self.insert_document("seasons", seasonProfileJson)
-        logger.info(f"Race added to DB")
+        logger.info(f"Season Profile added to DB")
 
     def insert_document(self, collection_name : str, document : dict):
         """Insert a document into a specified collection."""

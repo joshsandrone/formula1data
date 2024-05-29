@@ -1,12 +1,12 @@
 <script>
 import HeaderBar from './components/Generic/HeaderBar.vue'
-import SeasonDash from './components/SeasonStatsDashboard.vue';
+// import SeasonDash from './components/SeasonStatsDashboard.vue';
 
 
 export default {
   components: {
     HeaderBar,
-    SeasonDash
+    // SeasonDash
   }
 };
 </script>
@@ -18,9 +18,10 @@ export default {
   <div id="app">
     <header class="mb-5">
       <HeaderBar />
+      <router-view />
     </header>
     <main>
-      <SeasonDash/>
+      <!-- <SeasonDash/> -->
     </main>
   </div>
 </template>

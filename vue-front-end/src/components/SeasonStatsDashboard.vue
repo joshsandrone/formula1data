@@ -1,7 +1,7 @@
 <template>
   <div class="mx-10">
     <div class="flex mb-5 items-center justify-between">
-      <PrimeDropdown v-model="selectedSeason" :options="seasons" class="bg-gray-50 w-30" @change="onSeasonChange" placeholder="Select a Season" />
+      <SeasonSelectDropdown  @season-selected="onSeasonChange" />
       <div>
         <h3 class="text-xl font-semibold"> {{ selectedDriver }}</h3>
         <p class="text-sm font-medium">{{ selectedDriverTeam.name }} </p>
@@ -11,25 +11,25 @@
     </div>
 
       <div class="flex w-full">
-        <DriverMenu :drivers="drivers" :teams="teams" @driver-selected="setSelectedDriver" class="hidden md:block" style="width:230px;"/>
+        <DriverMenu :menuData="driverMenuData" @driverMenu-button-selected="setSelectedDriver" class="hidden md:block" style="width:230px;"/>
         <SeasonRaceStats :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
       </div>
   </div>
 </template>
 
 
-
-
 <script>
 import api from '@/services/api';
 import SeasonRaceStats from './DriverSeasonData.vue'
-import DriverMenu from './DriverMenu.vue'
+import DriverMenu from './Generic/SideMenu.vue'
+import SeasonSelectDropdown from './Generic/SeasonSelectDropdown.vue'
 
 
 export default {
   components: {
     DriverMenu,
-    SeasonRaceStats
+    SeasonRaceStats,
+    SeasonSelectDropdown
   },
   data() {
     return {
@@ -46,7 +46,11 @@ export default {
         primaryColor : null,
         points : null
       },
-      teams : []
+      teams : [],
+      driverMenuData: {
+        name : "driverMenu",
+        buttons : {}
+      }
     };
   },
   mounted() {
@@ -58,21 +62,13 @@ export default {
   },
   methods: {
 
-    async fetchAvailableSeasonProfiles(){
-      try {
-        const response = await api.getAvailableSeasonProfiles(this.selectedSeason);
-        this.setSeasonSelectOptions(response.data);
-      } catch (error) {
-        console.error('Failed to fetch available season profiles:', error);
-      }
-    },
-
     async fetchSeasonProfile(){
       try {
         const response = await api.getSeasonProfile(this.selectedSeason);
         this.setTeamProfiles(response.data);
         this.setTeamProfile();
-        this.setDriverSelectOptions(response.data);
+        this.setDrivers(response.data);
+        this.setDriverMenu(response.data);
       } catch (error) {
         console.error('Failed to fetch season profile:', error);
       }
@@ -83,14 +79,21 @@ export default {
         this.setTeamProfile()
     },
 
-    setDriverSelectOptions(seasonProfile){
+    setDrivers(seasonProfile){
       this.drivers = seasonProfile.teams.map((team) => {
         return team.drivers.map(driver => driver.name);
       }).flat()
     },
 
-    setSeasonSelectOptions(seasons){
-      this.seasons = seasons;
+    setDriverMenu(seasonProfile){
+      this.driverMenuData.buttons = seasonProfile.teams.map(team => {
+        return team.drivers.map(driver => {
+          return {
+            name : driver.name,
+            color : team.primaryColor
+          }
+        }).flat()
+      }).flat()
     },
 
     setTeamProfiles(seasonProfile){
@@ -109,29 +112,24 @@ export default {
       }
     },
 
-    onSeasonChange(){
+    onSeasonChange(season){
+      this.selectedSeason = season;
       this.fetchSeasonProfile()
     },
 
     updateUrl(){
-      const newUrl = `/${this.selectedSeason}/${this.selectedDriver}`;
-      // Update the URL without reloading the page
-      this.$router.push(newUrl);
+      // const newUrl = `seasonData/${this.selectedSeason}/${this.selectedDriver}`;
+      // console.log("new new url ==== ", newUrl);
+      // // Update the URL without reloading the page
+      // this.$router.push(newUrl);
     },
 
     loadFromURL(){
-      console.log("333333333", this.$route)
-      console.log("44444444", window.location)
-      console.log("5555555", this.$route.params)
       const { season, driver } = this.$route.params;
-
-      console.log("66666666", season, driver)
-
       this.selectedSeason = season || "2024";
       this.selectedDriver = driver || "Max Verstappen";
 
       // this.updateUrl();
-      this.fetchAvailableSeasonProfiles();
       this.fetchSeasonProfile();
       this.setSelectedDriver(this.selectedDriver)
     }

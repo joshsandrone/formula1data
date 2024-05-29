@@ -3,6 +3,7 @@ package entity
 type SeasonProfile struct {
     Season string         `json:"season" bson:"season"`
     Teams  []SeasonTeams `json:"teams" bson:"teams"`
+    Races  []SeasonRaces `json:"races" bson:"races`
 }
 
 type SeasonTeams struct {
@@ -19,4 +20,11 @@ type SeasonDrivers struct {
 
 type SeasonYear struct {
     Year string `bson:"season"`
+}
+
+type SeasonRaces struct {
+    Round       int         `json:"round"`
+    Location    string      `json:"location"`
+    Date        string      `json:"date"`
+    Laps        int         `json:"laps"`
 }
