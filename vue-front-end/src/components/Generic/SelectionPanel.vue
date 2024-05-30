@@ -9,11 +9,10 @@
 
 
 
+
 <script>
-// import api from '@/services/api';
 import SideMenu from './SideMenu.vue'
 import SeasonSelectDropdown from './SeasonSelectDropdown.vue'
-
 
 export default {
   props : [
@@ -23,49 +22,15 @@ export default {
     SideMenu,
     SeasonSelectDropdown
   },
-  data() {
-    return {
-    };
-  },
-//   mounted() {
-//     this.loadFromURL();
-//   },
-//   watch: {
-//     // selectedDriver : 'updateUrl',
-//     // selectedSeason : 'updateUrl'
-//   },
   methods: {
-    // setSelectedDriver(driver) {
-    //     this.selectedDriver = driver;
-    //     this.setTeamProfile()
-    // },
-
-    // setSideMenu(seasonProfile){
-    //   this.driverMenuData.buttons = seasonProfile.teams.map(team => {
-    //     return team.drivers.map(driver => {
-    //       return {
-    //         name : driver.name,
-    //         color : team.primaryColor
-    //       }
-    //     }).flat()
-    //   }).flat()
-    // },
-
-    // onSeasonChange(season){
-    //   this.selectedSeason = season;
-    //   this.fetchSeasonProfile()
-    // },
-
     onButtonSelected(button){
         console.log("Button selected ", button)
         this.$emit(`button-selected`, button);
     },
-
     onDropDownChanged(button){
         console.log("Dropdown used: ", button)
         this.$emit(`dropdown-selected`, button);
     }
-
   }
 };
 </script>
