@@ -19,7 +19,7 @@ export default {
   },
   methods: {
     buttonSelection(button) {
-      this.$emit(`${this.menuData.name}-button-selected`, button);
+      this.$emit(`button-selected`, button);
     }
   }
 };

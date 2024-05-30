@@ -1,35 +1,30 @@
-<template>
-  <div class="mx-10">
-    <div class="flex mb-5 items-center justify-between">
-      <SeasonSelectDropdown  @season-selected="onSeasonChange" />
-      <div>
+ <template>
+ 
+  <div class="mx-10 flex mt-4">
+    <SelectionPanel :panelData="selectionPanel"  @dropdown-selected="onSeasonChange" @button-selected="onDriverChange" />
+
+    <div class="flex flex-col w-full">
+      <div style="height: 70px;">
         <h3 class="text-xl font-semibold"> {{ selectedDriver }}</h3>
         <p class="text-sm font-medium">{{ selectedDriverTeam.name }} </p>
       </div>
-      
-      <p></p>
+      <SeasonRaceStats :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
     </div>
-
-      <div class="flex w-full">
-        <DriverMenu :menuData="driverMenuData" @driverMenu-button-selected="setSelectedDriver" class="hidden md:block" style="width:230px;"/>
-        <SeasonRaceStats :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
-      </div>
   </div>
+
 </template>
 
 
 <script>
 import api from '@/services/api';
+import SelectionPanel from './Generic/SelectionPanel.vue'
 import SeasonRaceStats from './DriverSeasonData.vue'
-import DriverMenu from './Generic/SideMenu.vue'
-import SeasonSelectDropdown from './Generic/SeasonSelectDropdown.vue'
 
 
 export default {
   components: {
-    DriverMenu,
     SeasonRaceStats,
-    SeasonSelectDropdown
+    SelectionPanel
   },
   data() {
     return {
@@ -42,14 +37,17 @@ export default {
       ],
       selectedDriver: "Max Verstappen",
       selectedDriverTeam: {
-        name : null,
+        name : "Red Bull Racing Honda RBPT",
         primaryColor : null,
         points : null
       },
       teams : [],
-      driverMenuData: {
-        name : "driverMenu",
-        buttons : {}
+      selectionPanel: {
+        name: "seasonDriverPanel",
+        menuData: {
+          name : "driverMenu",
+          buttons : {}
+        }
       }
     };
   },
@@ -74,11 +72,6 @@ export default {
       }
     },
 
-    setSelectedDriver(driver) {
-        this.selectedDriver = driver;
-        this.setTeamProfile()
-    },
-
     setDrivers(seasonProfile){
       this.drivers = seasonProfile.teams.map((team) => {
         return team.drivers.map(driver => driver.name);
@@ -86,7 +79,7 @@ export default {
     },
 
     setDriverMenu(seasonProfile){
-      this.driverMenuData.buttons = seasonProfile.teams.map(team => {
+      this.selectionPanel.menuData.buttons = seasonProfile.teams.map(team => {
         return team.drivers.map(driver => {
           return {
             name : driver.name,
@@ -117,6 +110,11 @@ export default {
       this.fetchSeasonProfile()
     },
 
+    onDriverChange(driver){
+      this.selectedDriver = driver;
+      this.setTeamProfile();
+    },
+
     updateUrl(){
       // const newUrl = `seasonData/${this.selectedSeason}/${this.selectedDriver}`;
       // console.log("new new url ==== ", newUrl);
@@ -131,7 +129,7 @@ export default {
 
       // this.updateUrl();
       this.fetchSeasonProfile();
-      this.setSelectedDriver(this.selectedDriver)
+      this.onDriverChange(this.selectedDriver)
     }
   }
 };
