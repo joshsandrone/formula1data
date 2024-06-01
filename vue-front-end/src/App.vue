@@ -21,7 +21,6 @@ export default {
       <router-view />
     </header>
     <main>
-      <!-- <SeasonDash/> -->
     </main>
   </div>
 </template>

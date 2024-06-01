@@ -1,14 +1,31 @@
  <template>
  
-  <div class="mx-10 flex mt-4">
-    <SelectionPanel :panelData="selectionPanel"  @dropdown-selected="onSeasonChange" @button-selected="onDriverChange" />
+  <div class="mx-2 md:mx-10 flex flex-col md:flex-row mt-4 w-full">
 
-    <div class="flex flex-col w-full">
-      <div style="height: 70px;">
-        <h3 class="text-xl font-semibold"> {{ selectedDriver }}</h3>
-        <p class="text-sm font-medium">{{ selectedDriverTeam.name }} </p>
+    <div class="">
+      <div class="flex flex-col">
+      <SelectionPanel :panelData="selectionPanel" :selectedMenuOption="selectedDriver"  @dropdown-selected="onSeasonChange" @button-selected="onDriverChange" @secondary-button-selected="onViewChange" />
       </div>
-      <SeasonRaceStats :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
+    </div>
+
+    <div class="dash-right">
+      <div class="flex flex-col">
+        <div class="flex flex-col md:flex-row mb-4 md:mb-0">
+          <p class="flex-1"></p>
+          <div class="flex-1 hidden md:block h-16">
+            <h3 class="text-xl font-semibold"> {{ selectedDriver }}</h3>
+            <p class="text-sm font-medium">{{ selectedDriverTeam.name }} </p>
+          </div>
+
+          <div class="flex-1 md:text-right mr-4 hidden md:block">
+            <PrimeSelectButton v-model="statsType" :options="statTypes" @change="changeStatType" class="mt-2"/>
+          </div>
+
+          
+        </div>
+        <SeasonRaceStats id="statsDashboard" class="season-view"  :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
+        <RacesTable id="seasonCalender" class="hidden season-view" :rows="racesTable" />
+      </div>
     </div>
   </div>
 
@@ -19,12 +36,14 @@
 import api from '@/services/api';
 import SelectionPanel from './Generic/SelectionPanel.vue'
 import SeasonRaceStats from './DriverSeasonData.vue'
+import RacesTable from './Generic/GraphicTable.vue'
 
 
 export default {
   components: {
     SeasonRaceStats,
-    SelectionPanel
+    SelectionPanel,
+    RacesTable
   },
   data() {
     return {
@@ -46,9 +65,22 @@ export default {
         name: "seasonDriverPanel",
         menuData: {
           name : "driverMenu",
-          buttons : {}
+          buttons : [],
+          secondaryButtons : [
+            {
+              name: "Season Calender",
+              color: "orange"
+            },
+            {
+              name: "Championships",
+              color: "orange"
+            }
+          ],
         }
-      }
+      },
+      racesTable: [],
+      statsType : "Races",
+      statTypes : ["Races", "Qualys"]
     };
   },
   mounted() {
@@ -67,6 +99,7 @@ export default {
         this.setTeamProfile();
         this.setDrivers(response.data);
         this.setDriverMenu(response.data);
+        this.setChampionshipTable(response.data);
       } catch (error) {
         console.error('Failed to fetch season profile:', error);
       }
@@ -105,6 +138,17 @@ export default {
       }
     },
 
+    setChampionshipTable(season){
+      this.racesTable = season.races.map(r => {
+        return {
+          date : r.date,
+          location : r.location,
+          laps : `${r.laps} laps`
+        }
+      })
+      console.log("championship table = ", this.racesTable)
+    },
+
     onSeasonChange(season){
       this.selectedSeason = season;
       this.fetchSeasonProfile()
@@ -113,6 +157,33 @@ export default {
     onDriverChange(driver){
       this.selectedDriver = driver;
       this.setTeamProfile();
+      this.onViewChange("Stats Dashboard Races")
+    },
+
+    onViewChange(view){
+      console.log("View change - ", view)
+
+      for (const seasonView of document.querySelectorAll(".season-view")){
+        seasonView.classList.add("hidden")
+      }
+
+      if (view === "Season Calender"){
+        document.querySelector("#seasonCalender").classList.remove("hidden");
+      }
+
+      else if (view === "Stats Dashboard Races"){
+        document.querySelector("#statsDashboard").classList.remove("hidden");
+      }
+
+      else if (view === "Stats Dashboard Qualys"){
+        document.querySelector("#statsDashboard").classList.remove("hidden");
+      }
+
+
+    },
+
+    changeStatType(){
+      this.onViewChange(`Stats Dashboard ${this.statsType}`);
     },
 
     updateUrl(){
@@ -134,3 +205,21 @@ export default {
   }
 };
 </script>
+
+
+<style>
+/* On md and below, set card padding to 0.8 (from 1.5)*/
+@media (max-width: 768px){
+  .p-card-body{
+    
+    padding: 0.8rem !important;
+  }
+}
+
+@media (min-width: 769px){
+  .dash-right{
+  width: calc(100vw - 325px);
+  }
+}
+
+</style>

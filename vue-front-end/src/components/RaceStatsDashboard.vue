@@ -1,6 +1,6 @@
 <template>
   <div class="mx-10 flex mt-4">
-    <SelectionPanel :panelData="selectionPanel"  @dropdown-selected="onSeasonChange" @button-selected="onRaceChange" />
+    <SelectionPanel :panelData="selectionPanel" :selectedMenuOption="selectedRace"  @dropdown-selected="onSeasonChange" @button-selected="onRaceChange" />
 
     <div class="flex flex-col w-full">
     </div>
@@ -24,11 +24,12 @@ export default {
   data() {
     return {
       selectedSeason: "2024",
+      selectedRace: null,
       selectionPanel: {
         name: "seasonRacePanel",
         menuData: {
           name : "raceMenu",
-          buttons : {}
+          buttons : []
         }
       }
     }

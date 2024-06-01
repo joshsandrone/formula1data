@@ -16,6 +16,7 @@ import Dropdown from 'primevue/dropdown';
 import Button from 'primevue/button';
 import Chart from 'primevue/chart';
 import OverlayPanel from 'primevue/overlaypanel';
+import SelectButton from 'primevue/selectbutton';
 
 
 
@@ -28,5 +29,6 @@ app.component('PrimeDropdown', Dropdown);
 app.component('PrimeButton', Button)
 app.component('PrimeChart', Chart);
 app.component('PrimeOverlay', OverlayPanel);
+app.component('PrimeSelectButton', SelectButton);
 
 app.mount('#app');
