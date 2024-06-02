@@ -113,10 +113,12 @@ export default {
         },
         scales: {
           y: {
-            min: this.graphInputData.min % 2 == 0 ? this.graphInputData.min : this.graphInputData.min - 1 ,
-            max: this.graphInputData.max % 2 == 0 ? this.graphInputData.max : this.graphInputData.max + 1,
+            // min: this.graphInputData.min % 2 == 0 ? this.graphInputData.min : this.graphInputData.min - 1 ,
+            // max: this.graphInputData.max % 2 == 0 ? this.graphInputData.max : this.graphInputData.max + 1,
+            min: this.graphInputData.min,
+            max: this.graphInputData.max,
             ticks: {
-              stepSize: 2
+              stepSize: this.graphInputData.stepSize ? this.graphInputData.stepSize : 2
             }
           }
         }

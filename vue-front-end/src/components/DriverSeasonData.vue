@@ -17,10 +17,10 @@
           <div class="flex flex-wrap md:flex-nowrap justify-center items-center mb-4">
             <StatCircles class="" :stats="seasonQualyDataStatCircles" :primaryColor="color"/>
           </div>
-          <!-- <div class="flex flex-wrap md:flex-nowrap justify-center items-center" >
-           <LineGraph title="Race Results" :graphInputData="raceResultsGraphData" :primaryColor="color" class="w-full md:w-1/2 mb-4"/>
-           <LineGraph title="Positions Gained Per Race" :graphInputData="racePositionsGainedGraphData" :primaryColor="color" class="w-full md:w-1/2 mb-4"/>
-          </div> -->
+          <div class="flex flex-wrap md:flex-nowrap justify-center items-center" >
+           <LineGraph title="Qualy Results" :graphInputData="qualyResultsGraphData" :primaryColor="color" class="w-full md:w-1/2 mb-4"/>
+           <LineGraph title="Gap To Pole" :graphInputData="qualyGapToPoleGraphData" :primaryColor="color" class="w-full md:w-1/2 mb-4"/>
+          </div>
         </div>
   </div>
 
@@ -150,6 +150,20 @@ export default {
               "overlay" : {}
             }
       ],
+      qualyResultsGraphData: {
+        dataset : null,
+        labels : null,
+        average : null,
+        min : 0,
+        max : 20
+      },
+      qualyGapToPoleGraphData: {
+        dataset : null,
+        labels : null,
+        average : null,
+        min : null,
+        max : null,
+      },
     };
   },
   methods: {
@@ -229,10 +243,31 @@ export default {
 
       this.seasonQualyDataStatCircles.find(r => r.id === "avgQualyPos").value = seasonData.qualifyings.avgQualyPos.toFixed(2);
       this.seasonQualyDataStatCircles.find(r => r.id === "highestPos").value = seasonData.qualifyings.highestQualyPos;
-      this.seasonQualyDataStatCircles.find(r => r.id === "avgGapToPole").value = seasonData.qualifyings.avgGapToPole;
+      this.seasonQualyDataStatCircles.find(r => r.id === "avgGapToPole").value = seasonData.qualifyings.avgGapToPole.toFixed(3);
       this.seasonQualyDataStatCircles.find(r => r.id === "consistency").value = 66;
 
+      this.qualyResultsGraphData = {
+        dataset : seasonData.qualifyings.results.map(r => {
+          return {value : r.position}
+        }),
+        labels : seasonData.qualifyings.results.map(r => r.location),
+        average : seasonData.qualifyings.avgRacePos,
+        min : 0,
+        max : 20
+      }
 
+
+      console.log(Math.max(...seasonData.qualifyings.results.map(r => r.gapToPole)) + 0.1)
+
+      this.qualyGapToPoleGraphData = {
+        dataset : seasonData.qualifyings.results.map(r => {
+          return {value : r.gapToPole}
+        }),
+        labels : seasonData.qualifyings.results.map(r => r.location),
+        min: 0,
+        max : Math.max(...seasonData.qualifyings.results.map(r => r.gapToPole)) + 0.1,
+        stepSize : 0.2
+      }
     },
 
     onSeasonChange(){
