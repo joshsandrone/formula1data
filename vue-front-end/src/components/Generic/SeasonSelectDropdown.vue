@@ -17,6 +17,7 @@ export default {
   },
   mounted() {
     this.fetchAvailableSeasonProfiles();
+    this.loadFromURL();
   },
   methods: {
     async fetchAvailableSeasonProfiles(){
@@ -34,6 +35,11 @@ export default {
 
     onSeasonChange() {
       this.$emit(`season-selected`, this.selectedSeason);
+    },
+
+    loadFromURL() {
+      const season = this.$route.params.season;
+      this.selectedSeason = season || "2024";
     }
   }
 }

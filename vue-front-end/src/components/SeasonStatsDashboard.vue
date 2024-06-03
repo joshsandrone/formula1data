@@ -183,6 +183,8 @@ export default {
       // console.log("new new url ==== ", newUrl);
       // // Update the URL without reloading the page
       // this.$router.push(newUrl);
+
+      this.$router.push({name : "SeasonStats", params : {season : this.selectedSeason, driver: this.selectedDriver}})
     },
 
     loadFromURL(){
@@ -190,7 +192,6 @@ export default {
       this.selectedSeason = season || "2024";
       this.selectedDriver = driver || "Max Verstappen";
 
-      // this.updateUrl();
       this.fetchSeasonProfile();
       this.onDriverChange(this.selectedDriver)
     }

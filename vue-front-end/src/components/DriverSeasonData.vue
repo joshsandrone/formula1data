@@ -137,7 +137,7 @@ export default {
               "id" : "avgGapToPole",
               "desc" : "Avg Gap To Pole",
               "min" : 0,
-              "max" : 1,
+              "max" : 3.0,
               "value": 0,
               "template" : "{value}s",
               "overlay" : {}
