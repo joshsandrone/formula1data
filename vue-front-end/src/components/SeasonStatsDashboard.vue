@@ -18,7 +18,7 @@
           </div>
 
           <div class="flex-1 md:text-right mr-4 hidden md:block">
-            <PrimeSelectButton v-model="statsType" :options="statTypes" @change="changeStatType" class="mt-2"/>
+            <PrimeSelectButton v-model="statsType" :options="statTypes" @change="changeStatType" :allowEmpty="false" class="mt-2"/>
           </div>
 
           
@@ -47,13 +47,7 @@ export default {
   },
   data() {
     return {
-      seasons: [
-        "2024"
-      ],
       selectedSeason: "2024",
-      drivers: [
-        "Max Verstappen"
-      ],
       selectedDriver: "Max Verstappen",
       selectedDriverTeam: {
         name : "Red Bull Racing Honda RBPT",
@@ -97,18 +91,11 @@ export default {
         const response = await api.getSeasonProfile(this.selectedSeason);
         this.setTeamProfiles(response.data);
         this.setTeamProfile();
-        this.setDrivers(response.data);
         this.setDriverMenu(response.data);
         this.setChampionshipTable(response.data);
       } catch (error) {
         console.error('Failed to fetch season profile:', error);
       }
-    },
-
-    setDrivers(seasonProfile){
-      this.drivers = seasonProfile.teams.map((team) => {
-        return team.drivers.map(driver => driver.name);
-      }).flat()
     },
 
     setDriverMenu(seasonProfile){
@@ -139,11 +126,21 @@ export default {
     },
 
     setChampionshipTable(season){
+      console.log("season ==== ", season)
       this.racesTable = season.races.map(r => {
         return {
-          date : r.date,
-          location : r.location,
-          laps : `${r.laps} laps`
+          row : {
+            date : r.date,
+            location : r.location,
+            laps : `${r.laps} laps`
+          },
+          link: {
+            name: "RaceStats",
+            params : {
+              season : season.season,
+              race : r.location
+            }
+          }
         }
       })
       console.log("championship table = ", this.racesTable)
@@ -179,11 +176,6 @@ export default {
     },
 
     updateUrl(){
-      // const newUrl = `seasonData/${this.selectedSeason}/${this.selectedDriver}`;
-      // console.log("new new url ==== ", newUrl);
-      // // Update the URL without reloading the page
-      // this.$router.push(newUrl);
-
       this.$router.push({name : "SeasonStats", params : {season : this.selectedSeason, driver: this.selectedDriver}})
     },
 

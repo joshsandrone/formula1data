@@ -24,7 +24,11 @@ func NewSeasonProfileService(repo repositories.SeasonProfileRepository) SeasonPr
 }
 
 func (s *seasonProfileService) GetSeasonProfile(season string) entity.SeasonProfile {
-	return s.seasonProfileRepository.GetSeasonProfile(season)
+	seasonProfile := s.seasonProfileRepository.GetSeasonProfile(season)
+	seasonProfile.NumRaces = len(seasonProfile.Races)
+	return seasonProfile
+
+
 }
 
 func (s *seasonProfileService) GetAvailableSeasonProfiles() []string {

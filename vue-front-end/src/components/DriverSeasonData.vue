@@ -183,6 +183,7 @@ export default {
 
     setSeasonRaceData(seasonData){
       this.seasonRaceDataStatBar = {
+        "Races" : seasonData.races.RacesEntered,
         "Wins" : seasonData.races.wins,
         "Podiums" : seasonData.races.podiums,
         "Points" : seasonData.races.points + seasonData.SprintRaces.sprintPoints,

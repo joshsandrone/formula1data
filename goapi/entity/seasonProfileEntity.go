@@ -4,6 +4,7 @@ type SeasonProfile struct {
     Season string         `json:"season" bson:"season"`
     Teams  []SeasonTeams `json:"teams" bson:"teams"`
     Races  []SeasonRaces `json:"races" bson:"races`
+    NumRaces    int     `json:"numRaces"`
 }
 
 type SeasonTeams struct {

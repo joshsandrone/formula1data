@@ -5,6 +5,7 @@ package entity
 // These structs are passed between the repositoires (database) layer and the service layer
 
 type DriverSeasonRaceData struct {
+	RacesEntered	int		`json:racesEntered`
 	Wins 			int  	`json:"wins"` 
 	Podiums 		int 	`json:"podiums"`
 	Dnfs 			int 	`json:"dnfs"`
@@ -21,6 +22,7 @@ type DriverSeasonRaceData struct {
 }
 
 type DriverSeasonSprintRaceData struct {
+	SprintsEntered	int		`json:racesEntered`
 	SprintWins int `json:"sprintWins"`
 	SprintPodiums int `json:"sprintPodiums"`
 	SprintDnfs int `json:"sprintDnfs"`
@@ -35,6 +37,7 @@ type DriverSeasonSprintRaceData struct {
 
 
 type DriverSeasonQualyData struct {
+	QualysEntered	int		`json:racesEntered`
 	Poles int `json:"poles"`// swap to List?
 	FrontRows int `json:"frontRows"`// Swap to List?
 	AvgQualyPos float32 `json:"avgQualyPos"`

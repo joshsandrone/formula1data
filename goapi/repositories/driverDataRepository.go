@@ -65,6 +65,8 @@ func (r *driverDataRepository) GetDriverSeasonRaceStats(name string, season stri
 
 			if racePosition.Driver == name {
 
+				driverSeasonData.RacesEntered++
+
 				// Record the result
 				raceResult := entity.DriverSeasonRaceResult{
 					Location:     raceWeekend.Location,
@@ -109,10 +111,24 @@ func (r *driverDataRepository) GetDriverSeasonRaceStats(name string, season stri
 		}
 	}
 
-	driverSeasonData.AvgRacePos = float32(driverSeasonCumulativePos) / float32(len(racesInSeason))
-	driverSeasonData.AvgRacePosExecludingDnfs = float32(driverSeasonCumulativePosExecludingDnfs) / float32(len(racesInSeason) - driverSeasonData.Dnfs)
-	driverSeasonData.PointsPerRace = float32(driverSeasonData.Points) / float32(len(racesInSeason))
-	driverSeasonData.FinishRate = float32(len(racesInSeason) - driverSeasonData.Dnfs) / float32(len(racesInSeason))
+
+	if driverSeasonData.RacesEntered > 0 {
+		driverSeasonData.AvgRacePos = float32(driverSeasonCumulativePos) / float32(driverSeasonData.RacesEntered)
+		if driverSeasonData.RacesEntered - driverSeasonData.Dnfs > 0 {
+			driverSeasonData.AvgRacePosExecludingDnfs = float32(driverSeasonCumulativePosExecludingDnfs) / float32(driverSeasonData.RacesEntered - driverSeasonData.Dnfs)
+		} else {
+			driverSeasonData.AvgRacePosExecludingDnfs = 0.0
+		}
+		driverSeasonData.PointsPerRace = float32(driverSeasonData.Points) / float32(driverSeasonData.RacesEntered)
+		driverSeasonData.FinishRate = float32(driverSeasonData.RacesEntered - driverSeasonData.Dnfs) / float32(driverSeasonData.RacesEntered)
+	} else {
+		driverSeasonData.AvgRacePos = 0.0
+		driverSeasonData.AvgRacePosExecludingDnfs = 0.0
+		driverSeasonData.PointsPerRace = 0.0
+		driverSeasonData.FinishRate = 0.0
+	}
+	
+
 	return driverSeasonData
 }
 
@@ -120,7 +136,6 @@ func (r *driverDataRepository) GetDriverSeasonRaceStats(name string, season stri
 
 func (r *driverDataRepository) GetDriverSeasonSprintRaceStats(name string, season string) (entity.DriverSeasonSprintRaceData) {
 	racesInSeason, err := r.GetRacesDocumentsInSeason(season)
-	totalSprintRaces := 0
 
 	if err != nil {
 		log.Fatal(err)
@@ -138,7 +153,7 @@ func (r *driverDataRepository) GetDriverSeasonSprintRaceStats(name string, seaso
 
 			if sprintRacePosition.Driver == name {
 
-				totalSprintRaces += 1
+				driverSeasonData.SprintsEntered++
 
 				sprintRaceResult := entity.DriverSeasonRaceResult{
 					Location:     raceWeekend.Location,
@@ -149,8 +164,6 @@ func (r *driverDataRepository) GetDriverSeasonSprintRaceStats(name string, seaso
 					PointsFinish: sprintRacePosition.Position <= MaxPointsFinshSprintRacePosition,
 				}
 				driverSeasonData.Results = append(driverSeasonData.Results, sprintRaceResult)
-
-
 				
 				// Highest sprint race finish position
 				if sprintRacePosition.Position < driverSeasonData.HighestSprintRacePos {
@@ -185,8 +198,23 @@ func (r *driverDataRepository) GetDriverSeasonSprintRaceStats(name string, seaso
 		}
 	}
 
-	driverSeasonData.AvgSprintRacePos = float32(driverSeasonCumulativeSprintPos) / float32(totalSprintRaces)
-	driverSeasonData.AvgSprintRacePosExecludingDnfs = float32(driverSeasonCumulativePosExecludingDnfs) / float32(totalSprintRaces - driverSeasonData.SprintDnfs)
+
+	fmt.Println(driverSeasonCumulativeSprintPos, driverSeasonData.SprintsEntered)
+
+
+	if driverSeasonData.SprintsEntered > 0 {
+		driverSeasonData.AvgSprintRacePos = float32(driverSeasonCumulativeSprintPos) / float32(driverSeasonData.SprintsEntered)
+		if driverSeasonData.SprintsEntered - driverSeasonData.SprintDnfs > 0 {
+			driverSeasonData.AvgSprintRacePosExecludingDnfs = float32(driverSeasonCumulativePosExecludingDnfs) / float32(driverSeasonData.SprintsEntered - driverSeasonData.SprintDnfs)
+		} else {
+			driverSeasonData.AvgSprintRacePosExecludingDnfs = 0.0
+		}
+	} else {
+		driverSeasonData.AvgSprintRacePos = 0.0
+		driverSeasonData.AvgSprintRacePosExecludingDnfs = 0.0
+	}
+	
+
 	return driverSeasonData
 }
 
@@ -214,6 +242,8 @@ func (r *driverDataRepository) GetDriverSeasonQualyStats(name string, season str
 			}
 
 			if qualyPosition.Driver == name {
+
+				driverSeasonData.QualysEntered++
 
 				var qualyDelta time.Duration
 
@@ -260,8 +290,15 @@ func (r *driverDataRepository) GetDriverSeasonQualyStats(name string, season str
 		}
 	}
 
-	driverSeasonData.AvgQualyPos = float32(driverSeasonCumulativePos) / float32(len(qualysInSeason))
-	driverSeasonData.AvgGapToPole = float32(driverSeasonCumulativeGapToPole) / float32(len(qualysInSeason))
+	if driverSeasonData.QualysEntered > 0 {
+		driverSeasonData.AvgQualyPos = float32(driverSeasonCumulativePos) / float32(driverSeasonData.QualysEntered)
+		driverSeasonData.AvgGapToPole = float32(driverSeasonCumulativeGapToPole) / float32(driverSeasonData.QualysEntered)
+	} else {
+		driverSeasonData.AvgQualyPos = 0.0 // or some default value
+		driverSeasonData.AvgGapToPole = 0.0 // or some default value
+	}
+	
+
 	return driverSeasonData
 }
 

@@ -3,6 +3,7 @@
     <SelectionPanel :panelData="selectionPanel" :selectedMenuOption="selectedRace"  @dropdown-selected="onSeasonChange" @button-selected="onRaceChange" />
 
     <div class="flex flex-col w-full">
+      <p>ss = {{ selectedRace }}</p>
     </div>
   </div>
 
@@ -37,6 +38,10 @@ export default {
   mounted() {
     this.loadFromURL();
   },
+  watch: {
+    selectedSeason : 'updateUrl',
+    selectedRace  : 'updateUrl'
+  },
   methods: {
     async fetchSeasonProfile(){
       try {
@@ -63,15 +68,17 @@ export default {
     },
 
     onRaceChange(race){
-      console.log(race);
+      this.selectedRace = race;
     },
 
+    updateUrl(){
+      this.$router.push({name : "RaceStats", params : {season : this.selectedSeason, race: this.selectedRace}})
+    },
 
     loadFromURL(){
-      // const { season, race } = this.$route.params;
-      // this.selectedSeason = season || "2024";
-      // this.selectedRace = race || "------";
-      // this.updateUrl();
+      const { season, race } = this.$route.params;
+      this.selectedSeason = season || "2024";
+      this.selectedRace = race || "Bahrain";
       this.fetchSeasonProfile();
     }
   }
