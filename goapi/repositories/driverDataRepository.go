@@ -13,6 +13,16 @@ import (
 	"time"
 )
 
+const (
+	PolePosition int = 1
+	WinPosition int = 1
+	MaxPodiumPosition int = 3
+	MaxPointsFinishPosition int = 10
+	MaxPointsFinshSprintRacePosition int = 8
+	MaxFrontRowPosition int = 2
+)
+
+
 type DriverDataRepository interface {
 	GetRaceWeekendsInSeasonCursor(season string, projection bson.M) (*mongo.Cursor, error)
 	GetRacesDocumentsInSeason(season string) ([]entity.RaceDocument, error)
@@ -60,9 +70,9 @@ func (r *driverDataRepository) GetDriverSeasonRaceStats(name string, season stri
 					Location:     raceWeekend.Location,
 					Position:     racePosition.Position,
 					Dnf:          racePosition.Dnf,
-					Win:          racePosition.Position < 2,
-					Podium:       racePosition.Position < 4,
-					PointsFinish: racePosition.Position < 11,
+					Win:          racePosition.Position == WinPosition,
+					Podium:       racePosition.Position <= MaxPodiumPosition,
+					PointsFinish: racePosition.Position <= MaxPointsFinishPosition,
 				}
 				driverSeasonData.Results = append(driverSeasonData.Results, raceResult)
 
@@ -72,17 +82,17 @@ func (r *driverDataRepository) GetDriverSeasonRaceStats(name string, season stri
 				}
 
 				// Number of wins
-				if racePosition.Position == 1 {
+				if racePosition.Position == WinPosition {
 					driverSeasonData.Wins++
 				}
 
 				// Number of podiums
-				if racePosition.Position < 4 {
+				if racePosition.Position <= MaxPodiumPosition {
 					driverSeasonData.Podiums++
 				}
 
 				// Number of points finishes
-				if racePosition.Position < 11 {
+				if racePosition.Position <= MaxPointsFinishPosition {
 					driverSeasonData.PointsFinishes++
 				}
 
@@ -134,9 +144,9 @@ func (r *driverDataRepository) GetDriverSeasonSprintRaceStats(name string, seaso
 					Location:     raceWeekend.Location,
 					Position:     sprintRacePosition.Position,
 					Dnf:          sprintRacePosition.Dnf,
-					Win:          sprintRacePosition.Position < 2,
-					Podium:       sprintRacePosition.Position < 4,
-					PointsFinish: sprintRacePosition.Position < 11,
+					Win:          sprintRacePosition.Position == WinPosition,
+					Podium:       sprintRacePosition.Position <= MaxPodiumPosition,
+					PointsFinish: sprintRacePosition.Position <= MaxPointsFinshSprintRacePosition,
 				}
 				driverSeasonData.Results = append(driverSeasonData.Results, sprintRaceResult)
 
@@ -148,17 +158,17 @@ func (r *driverDataRepository) GetDriverSeasonSprintRaceStats(name string, seaso
 				}
 
 				// Number of sprint wins
-				if sprintRacePosition.Position == 1 { // sort out MAGIC NUMS
+				if sprintRacePosition.Position == WinPosition {
 					driverSeasonData.SprintWins++
 				}
 
 				// Number of sprint podiums
-				if sprintRacePosition.Position < 4 { // sort out MAGIC NUMS
+				if sprintRacePosition.Position <= MaxPodiumPosition {
 					driverSeasonData.SprintPodiums++
 				}
 
 				// Number of sprint points finishes
-				if sprintRacePosition.Position < 9 { // sort out MAGIC NUMS
+				if sprintRacePosition.Position <= MaxPointsFinshSprintRacePosition {
 					driverSeasonData.SprintPointsFinishes++
 				}
 
@@ -222,9 +232,9 @@ func (r *driverDataRepository) GetDriverSeasonQualyStats(name string, season str
 				qualyResult := entity.DriverSeasonQualyResult{
 					Location:     raceWeekend.Location,
 					Position:     qualyPosition.Position,
-					Pole:          qualyPosition.Position < 2,
-					FrontRow:       qualyPosition.Position < 3,
-					GapToPole: 	qualyDelta.Seconds(), // ...... Requires logic!!!!!
+					Pole:          qualyPosition.Position == PolePosition,
+					FrontRow:       qualyPosition.Position <= MaxFrontRowPosition,
+					GapToPole: 	qualyDelta.Seconds(),
 				}
 
 				driverSeasonData.Results = append(driverSeasonData.Results, qualyResult)
@@ -235,12 +245,12 @@ func (r *driverDataRepository) GetDriverSeasonQualyStats(name string, season str
 				}
 
 				// Number of poles
-				if qualyPosition.Position == 1 {
+				if qualyPosition.Position == PolePosition {
 					driverSeasonData.Poles++
 				}
 
 				// Number of front rows
-				if qualyPosition.Position < 3 {
+				if qualyPosition.Position < MaxFrontRowPosition {
 					driverSeasonData.FrontRows++
 				}
 

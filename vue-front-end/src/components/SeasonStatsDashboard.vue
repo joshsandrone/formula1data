@@ -23,7 +23,7 @@
 
           
         </div>
-        <SeasonRaceStats id="statsDashboard" class="season-view"  :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
+        <SeasonRaceStats id="statsDashboard" class="season-view"  :statsType="statsType"  :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
         <RacesTable id="seasonCalender" class="hidden season-view" :rows="racesTable" />
       </div>
     </div>
@@ -157,7 +157,7 @@ export default {
     onDriverChange(driver){
       this.selectedDriver = driver;
       this.setTeamProfile();
-      this.onViewChange("Stats Dashboard Races")
+      this.onViewChange("Stats Dashboard")
     },
 
     onViewChange(view){
@@ -171,19 +171,11 @@ export default {
         document.querySelector("#seasonCalender").classList.remove("hidden");
       }
 
-      else if (view === "Stats Dashboard Races"){
-        document.querySelector("#statsDashboard").classList.remove("hidden");
-      }
-
-      else if (view === "Stats Dashboard Qualys"){
+      else if (view === "Stats Dashboard"){
         document.querySelector("#statsDashboard").classList.remove("hidden");
       }
 
 
-    },
-
-    changeStatType(){
-      this.onViewChange(`Stats Dashboard ${this.statsType}`);
     },
 
     updateUrl(){

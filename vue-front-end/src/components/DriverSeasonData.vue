@@ -1,6 +1,6 @@
 <template>
   <div>
-        <div class="w-full">
+        <div class="w-full" id="race-data">
           <StatBar :stats="seasonRaceDataStatBar" :color="color"/>
           <div class="flex flex-wrap md:flex-nowrap justify-center items-center mb-4">
             <StatCircles class="" :stats="seasonRaceDataStatCircles" :primaryColor="color"/>
@@ -12,7 +12,7 @@
         </div>
 
 
-        <div class="w-full">
+        <div class="w-full hidden" id="qualy-data">
           <StatBar :stats="seasonQualyDataStatBar" :color="color"/>
           <div class="flex flex-wrap md:flex-nowrap justify-center items-center mb-4">
             <StatCircles class="" :stats="seasonQualyDataStatCircles" :primaryColor="color"/>
@@ -41,7 +41,8 @@ export default {
     'selectedDriver',
     'selectedSeason',
     'color',
-    'teamPoints'
+    'teamPoints',
+    'statsType'
   ],
   components: {
     StatCircles,
@@ -50,7 +51,8 @@ export default {
   },
   watch: {
     selectedDriver: 'fetchDriverSeasonStats',
-    selectedSeason: 'fetchDriverSeasonStats'
+    selectedSeason: 'fetchDriverSeasonStats',
+    statsType: 'toggleStatView'
   },
   mounted(){
     this.fetchDriverSeasonStats()
@@ -268,6 +270,18 @@ export default {
         max : Math.max(...seasonData.qualifyings.results.map(r => r.gapToPole)) + 0.1,
         stepSize : 0.2
       }
+    },
+
+    toggleStatView(){
+      if(this.statsType === "Qualys"){
+        document.querySelector("#qualy-data").classList.remove("hidden")
+        document.querySelector("#race-data").classList.add("hidden")
+      }
+      else if(this.statsType === "Races") {
+        document.querySelector("#qualy-data").classList.add("hidden")
+        document.querySelector("#race-data").classList.remove("hidden")
+      }
+
     },
 
     onSeasonChange(){
