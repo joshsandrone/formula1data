@@ -31,12 +31,13 @@
 
 
 <script>
-import api from '@/services/api';
 import StatCircles from './DataRepr/StatCircles.vue'
 import LineGraph from './DataRepr/LineGraph.vue'
 import StatBar from './DataRepr/StatBar.vue'
+import fetchDriverSeasonData from '@/mixins/fetchDriverSeasonData.vue';
 
 export default {
+  mixins: [fetchDriverSeasonData],
   props: [
     'selectedDriver',
     'selectedSeason',
@@ -50,12 +51,12 @@ export default {
     StatBar
   },
   watch: {
-    selectedDriver: 'fetchDriverSeasonStats',
-    selectedSeason: 'fetchDriverSeasonStats',
+    selectedDriver: 'driverChange',
+    selectedSeason: 'driverChange',
     statsType: 'toggleStatView'
   },
   mounted(){
-    this.fetchDriverSeasonStats()
+    this.driverChange()
   },
   data() {
     return {
@@ -169,16 +170,10 @@ export default {
     };
   },
   methods: {
-    async fetchDriverSeasonStats() {
-      try {
-        let [firstname, surname] = this.selectedDriver.split(' ');
-        const response = await api.getDriverSeasonStats(this.selectedSeason,firstname,surname);
-
-        this.setSeasonRaceData(response.data)
-        this.setSeasonQualyData(response.data)
-      } catch (error) {
-        console.error('Failed to fetch driver season stats:', error);
-      }
+    async driverChange(){
+      let seasonData = await this.fetchDriverSeasonData(this.selectedDriver, this.selectedSeason, this.seasonData);
+      this.setSeasonRaceData(seasonData);
+      this.setSeasonQualyData(seasonData);
     },
 
     setSeasonRaceData(seasonData){
@@ -190,7 +185,7 @@ export default {
         "DNFs" : seasonData.races.dnfs
       }
 
-      let driverTeamPointPercentage = ((seasonData.races.points + seasonData.SprintRaces.sprintPoints) * 100 / (this.teamPoints)).toFixed(1);
+      let driverTeamPointPercentage = (seasonData.extra.totalPoints * 100 / (this.teamPoints)).toFixed(1);
       driverTeamPointPercentage = isNaN(driverTeamPointPercentage) ? 0.0 : driverTeamPointPercentage
 
       this.seasonRaceDataStatCircles.find(r => r.id === "avgRacePos").value = seasonData.races.avgRacePos.toFixed(2);
@@ -286,7 +281,7 @@ export default {
     },
 
     onSeasonChange(){
-      this.fetchDriverSeasonStats()
+      this.driverChange()
     }
   }
 };

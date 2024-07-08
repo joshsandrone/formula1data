@@ -5,7 +5,7 @@ import  RaceStatsDashboard from '@/components/RaceStatsDashboard.vue';
 
 const routes = [
   {
-    path: '/seasonData/:season?/:driver?',
+    path: '/seasonData/:season?/:page?',
     name: 'SeasonStats',
     component: SeasonStatsDashboard,
   },

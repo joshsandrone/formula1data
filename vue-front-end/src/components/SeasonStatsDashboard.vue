@@ -23,8 +23,9 @@
 
           
         </div>
-        <SeasonRaceStats id="statsDashboard" class="season-view"  :statsType="statsType"  :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
-        <RacesTable id="seasonCalender" class="hidden season-view" :rows="racesTable" />
+        <SeasonRaceStats id="stats-dashboard" class="season-view"  :statsType="statsType"  :selectedDriver="selectedDriver" :selectedSeason="selectedSeason" :color="selectedDriverTeam.primaryColor" :teamPoints="selectedDriverTeam.points"/>
+        <RacesTable id="season-calender" class="hidden season-view" :rows="racesTable" />
+        <Head2Head id="head-2-head" class="hidden season-view" :drivers="drivers" :season="selectedSeason" />
       </div>
     </div>
   </div>
@@ -37,13 +38,15 @@ import api from '@/services/api';
 import SelectionPanel from './Generic/SelectionPanel.vue'
 import SeasonRaceStats from './DriverSeasonData.vue'
 import RacesTable from './Generic/GraphicTable.vue'
+import Head2Head from './Head2Head.vue';
 
 
 export default {
   components: {
     SeasonRaceStats,
     SelectionPanel,
-    RacesTable
+    RacesTable,
+    Head2Head
   },
   data() {
     return {
@@ -55,6 +58,7 @@ export default {
         points : null
       },
       teams : [],
+      drivers: [],
       selectionPanel: {
         name: "seasonDriverPanel",
         menuData: {
@@ -63,10 +67,17 @@ export default {
           secondaryButtons : [
             {
               name: "Season Calender",
+              viewlinkid: "season-calender",
               color: "orange"
             },
             {
               name: "Championships",
+              viewlinkid: "championships",
+              color: "orange"
+            },
+            {
+              name: "Head-2-Head",
+              viewlinkid: "head-2-head",
               color: "orange"
             }
           ],
@@ -81,8 +92,12 @@ export default {
     this.loadFromURL();
   },
   watch: {
-    selectedDriver : 'updateUrl',
-    selectedSeason : 'updateUrl'
+    selectedDriver(newval){
+      this.onViewChange(newval, false)
+    },
+    selectedSeason(){
+      this.onViewChange(this.currentViewId, false);
+    }
   },
   methods: {
 
@@ -91,11 +106,17 @@ export default {
         const response = await api.getSeasonProfile(this.selectedSeason);
         this.setTeamProfiles(response.data);
         this.setTeamProfile();
+        this.setDrivers(response.data);
         this.setDriverMenu(response.data);
         this.setChampionshipTable(response.data);
       } catch (error) {
         console.error('Failed to fetch season profile:', error);
       }
+    },
+
+    setDrivers(seasonProfile){
+      this.drivers = seasonProfile.teams.map(team => {
+        return team.drivers.map(driver => driver.name)}).flat();
     },
 
     setDriverMenu(seasonProfile){
@@ -126,7 +147,6 @@ export default {
     },
 
     setChampionshipTable(season){
-      console.log("season ==== ", season)
       this.racesTable = season.races.map(r => {
         return {
           row : {
@@ -143,7 +163,6 @@ export default {
           }
         }
       })
-      console.log("championship table = ", this.racesTable)
     },
 
     onSeasonChange(season){
@@ -154,37 +173,41 @@ export default {
     onDriverChange(driver){
       this.selectedDriver = driver;
       this.setTeamProfile();
-      this.onViewChange("Stats Dashboard")
+      this.onViewChange("stats-dashboard")
     },
 
-    onViewChange(view){
-      console.log("View change - ", view)
+    onViewChange(viewid, changeOfSeasonView = true){
+      console.log("View change - ", viewid)
 
-      for (const seasonView of document.querySelectorAll(".season-view")){
-        seasonView.classList.add("hidden")
+      if (changeOfSeasonView){
+        for (const seasonView of document.querySelectorAll(".season-view")){
+          seasonView.classList.add("hidden")
+        }
+
+        document.getElementById(viewid).classList.remove("hidden");
       }
 
-      if (view === "Season Calender"){
-        document.querySelector("#seasonCalender").classList.remove("hidden");
-      }
-
-      else if (view === "Stats Dashboard"){
-        document.querySelector("#statsDashboard").classList.remove("hidden");
-      }
-
-
+      this.updateUrl(viewid);
     },
 
-    updateUrl(){
-      this.$router.push({name : "SeasonStats", params : {season : this.selectedSeason, driver: this.selectedDriver}})
+    updateUrl(page){
+      this.$router.push({name : "SeasonStats", params : {season : this.selectedSeason, page: page}})
+      this.currentViewId = page;
     },
 
     loadFromURL(){
-      const { season, driver } = this.$route.params;
+      const { season, page } = this.$route.params;
       this.selectedSeason = season || "2024";
-      this.selectedDriver = driver || "Max Verstappen";
-
       this.fetchSeasonProfile();
+
+      const seasonViewIds = Array.from(document.querySelectorAll(".season-view")).map( el => el.id );
+      if (seasonViewIds.includes(page)){
+        this.onViewChange(page);
+        return;
+      }
+
+      // if not passed a view, currenlty assume a driver has been passed, put them in view.
+      this.selectedDriver = page || "Max Verstappen";
       this.onDriverChange(this.selectedDriver)
     }
   }

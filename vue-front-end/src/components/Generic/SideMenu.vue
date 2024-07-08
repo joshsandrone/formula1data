@@ -9,7 +9,7 @@
 
     <div v-for="(button, index) in menuData.secondaryButtons" :key="index" class="flex">
       <span class="square" :style="{ backgroundColor: button.color }"></span>
-      <PrimeButton class="mx-2 px-1 hover:bg-gray-200 rounded-md" :label="button.name" @click="secondaryButtonSelection(button.name)"/>
+      <PrimeButton class="mx-2 px-1 hover:bg-gray-200 rounded-md" :label="button.name" @click="secondaryButtonSelection(button.viewlinkid)"/>
     </div>
   </div>
 </template>
