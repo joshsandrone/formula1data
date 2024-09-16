@@ -3,7 +3,7 @@
     <PrimeCard class="bg-gray-50 mx-2">
         <template #content>
               <h4 class="font-medium">{{ title }}</h4>
-             <PrimeChart type="line" :data="graphData" :options="graphOptions" class="h-30rem" />
+             <PrimeChart type="line" :data="graphData" :options="graphOptions" class="h-30rem" style="min-height:250px;"/>
         </template>
     </PrimeCard>
   </div>
@@ -56,6 +56,25 @@ export default {
                     data: this.graphInputData.dataset.map(r => r.value)
             }
         ]
+
+        // Add zero line (y=0) if set in inputData
+        if(this.graphInputData.zeroLine){
+            let zeroPointDataSer = [];
+            for (let i = 0; i < this.graphInputData.dataset.length; i++){
+              zeroPointDataSer.push(0);
+            }
+            graphDatasets.push(
+              {
+                    label: 'Zero Line',
+                    fill: false,
+                    borderColor: '#c8c8c8',
+                    pointRadius: 0,
+                    yAxisID: 'y',
+                    tension: 0.1,
+                    data: zeroPointDataSer
+              })          
+        }
+
         // Add an average line if set in the inputData
         if (this.graphInputData.average){
             let averagePosDataSet = [];
@@ -84,6 +103,8 @@ export default {
     },
     setGraphOptions(){
       this.graphOptions = {
+        responsive: true,
+        maintainAspectRatio : false,
         plugins: {
           legend: {
             display : true,
@@ -92,10 +113,12 @@ export default {
         },
         scales: {
           y: {
-            min: this.graphInputData.min % 2 == 0 ? this.graphInputData.min : this.graphInputData.min - 1 ,
-            max: this.graphInputData.max % 2 == 0 ? this.graphInputData.max : this.graphInputData.max + 1,
+            // min: this.graphInputData.min % 2 == 0 ? this.graphInputData.min : this.graphInputData.min - 1 ,
+            // max: this.graphInputData.max % 2 == 0 ? this.graphInputData.max : this.graphInputData.max + 1,
+            min: this.graphInputData.min,
+            max: this.graphInputData.max,
             ticks: {
-              stepSize: 2
+              stepSize: this.graphInputData.stepSize ? this.graphInputData.stepSize : 2
             }
           }
         }
