@@ -14,9 +14,9 @@ The below instructions give showcase how to use the datascraper using docker.
 3. e.g. docker run --rm  --network host scraper --profileSeason 2024
 
 ### Example commands
-docker build -t scraper .
-docker run --rm  --name scraper --network host scraper
-docker run --rm  --network host scraper --profileSeason 2024
-docker run --rm  --network host scraper --race italy --season 2024 --id 1235 --raceFormat standard
-docker run --rm  --network host scraper --race miami --season 2024 --id 1234 --raceFormat sprint2024
-docker run --rm  --network host scraper --race bahrain --season 2023 --id 1141 --raceFormat standard
+- docker build -t scraper .
+- docker run --rm  --name scraper --network host scraper
+- docker run --rm  --network host scraper --profileSeason 2024
+- docker run --rm  --network host scraper --race italy --season 2024 --id 1235 --raceFormat standard
+- docker run --rm  --network host scraper --race miami --season 2024 --id 1234 --raceFormat sprint2024
+- docker run --rm  --network host scraper --race bahrain --season 2023 --id 1141 --raceFormat standard
