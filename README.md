@@ -5,6 +5,7 @@
 ### dataScraper
 * Python with BeautifulSoup
 * Scrapes data from formula1.com
+* Please read the README within the dataScraper dir for instructions to run.
 ### webapp1 (to rename) (API)
 * Golang with Gin Gonic
 * Process the F1 Data stored in the database
